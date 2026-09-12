@@ -1,0 +1,15 @@
+TERMINAL 1
+────────────────────────────
+
+cd "D:\ai resume\resume-analyzer\backend"
+
+.\.venv\Scripts\Activate.ps1
+
+python app.py
+
+TERMINAL 2
+────────────────────────────
+
+cd "D:\ai resume\resume-analyzer\frontend"
+
+npm run dev

@@ -1,0 +1,21 @@
+Software Engineer Intern
+
+Responsibilities
+
+Develop software applications using modern programming practices.
+Work with engineering teams to build reliable software.
+Write clean and maintainable code.
+Debug software issues and improve application performance.
+
+Requirements
+
+Strong programming skills in Python and C++.
+Knowledge of Data Structures and Algorithms.
+Experience with SQL and Git.
+Good problem solving skills.
+
+Preferred Qualifications
+
+Knowledge of Docker.
+Experience with AWS.
+Knowledge of REST APIs.

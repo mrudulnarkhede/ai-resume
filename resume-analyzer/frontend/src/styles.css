@@ -1,0 +1,722 @@
+/* =========================================================
+   AI RESUME ANALYZER — DAY 15 PART 5
+   Compact + Horizontal Desktop Dashboard
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, #dbeafe 0, transparent 28%),
+    #f1f5f9;
+}
+
+/* =========================================================
+   HEADER — SHORTER
+   ========================================================= */
+
+.header {
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: white;
+  padding: 20px 24px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.14);
+}
+
+.header-content {
+  width: min(1450px, 100%);
+  margin: 0 auto;
+}
+
+.header h1 {
+  margin: 0 0 4px;
+  font-size: clamp(25px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.header p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.container {
+  width: min(1450px, calc(100% - 32px));
+  margin: 16px auto 36px;
+}
+
+/* =========================================================
+   INPUT CARD — THREE COLUMNS
+   ========================================================= */
+
+.input-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(360px, 1.8fr) 210px;
+  column-gap: 20px;
+  align-items: center;
+
+  background: white;
+  border: 1px solid #dbe3ee;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 7px 24px rgba(15, 23, 42, 0.055);
+  margin-bottom: 16px;
+}
+
+.input-card > h2 {
+  grid-column: 1 / -1;
+  color: #0f172a !important;
+  margin: 0 0 3px;
+  font-size: 20px;
+  text-align: left;
+}
+
+.input-card > p {
+  grid-column: 1 / -1;
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 13px;
+  text-align: left;
+}
+
+.input-section {
+  min-width: 0;
+  padding: 12px 0;
+  border-top: 1px solid #e2e8f0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 7px;
+}
+
+.input-section h3 {
+  margin: 0;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.input-section:first-of-type {
+  grid-column: 1;
+}
+
+.input-section:nth-of-type(2) {
+  grid-column: 2;
+}
+
+.file-input {
+  width: 100%;
+  max-width: 100%;
+}
+
+.input-section p {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+  overflow-wrap: anywhere;
+}
+
+.input-section textarea,
+textarea {
+  width: 100%;
+  height: 105px;
+  min-height: 105px;
+  resize: vertical;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 10px 12px;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.09);
+  background: white;
+}
+
+.analyze-button {
+  grid-column: 3;
+  align-self: center;
+
+  width: 100%;
+  min-height: 46px;
+  margin: 20px 0 0;
+
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 15px;
+
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-weight: 750;
+  font-size: 14px;
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.analyze-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 16px rgba(37, 99, 235, 0.2);
+}
+
+.analyze-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.input-card > .loading,
+.input-card > .error {
+  grid-column: 1 / -1;
+}
+
+/* =========================================================
+   RESULTS — 12 COLUMN SYSTEM
+   ========================================================= */
+
+.results {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.results-title {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  font-size: 21px;
+  letter-spacing: -0.3px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card {
+  min-width: 0;
+  background: white;
+  border: 1px solid #dbe3ee;
+  border-radius: 14px;
+  padding: 15px;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.045);
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.card h3 {
+  margin: 14px 0 8px;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.card p {
+  color: #475569;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   TOP SCORE ROW
+   ========================================================= */
+
+.score-grid {
+  grid-column: span 7;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.score-card {
+  min-height: 290px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.score-card h2 {
+  margin-bottom: 0;
+}
+
+.score-label {
+  margin-top: 9px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+/* =========================================================
+   SCORE BREAKDOWN
+   ========================================================= */
+
+.dashboard-breakdown {
+  grid-column: span 5;
+  min-height: 290px;
+}
+
+.dashboard-breakdown > p {
+  margin: 0 0 9px;
+  font-size: 12px;
+}
+
+.score-breakdown-row {
+  margin-bottom: 12px;
+}
+
+.score-breakdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.score-breakdown-header span {
+  color: #475569;
+  white-space: nowrap;
+}
+
+.score-breakdown-bar {
+  height: 7px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.score-breakdown-fill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.score-breakdown-final {
+  margin-top: 12px;
+  padding: 11px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+}
+
+/* =========================================================
+   CANDIDATE / SKILLS / ATS
+   ========================================================= */
+
+.dashboard-candidate {
+  grid-column: span 3;
+}
+
+.dashboard-skills {
+  grid-column: span 6;
+}
+
+.dashboard-ats {
+  grid-column: span 3;
+}
+
+.dashboard-candidate p {
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.dashboard-candidate strong {
+  color: #0f172a;
+}
+
+.skill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.skill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.skill-matched {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.skill-missing {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* =========================================================
+   ATS
+   ========================================================= */
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.check {
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.check strong {
+  display: block;
+  font-size: 11px;
+}
+
+.check p {
+  margin: 4px 0 1px;
+  font-size: 11px;
+}
+
+.check small {
+  color: #64748b;
+  font-size: 10px;
+}
+
+.check-good {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.check-bad {
+  background: #fff7f7;
+  border-color: #fecaca;
+}
+
+/* =========================================================
+   AI REVIEW
+   ========================================================= */
+
+.dashboard-ai {
+  grid-column: span 8;
+}
+
+.dashboard-ai > div {
+  min-width: 0;
+}
+
+.dashboard-ai > div > div {
+  min-width: 0;
+}
+
+.dashboard-ai > div > div > div {
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   RECOMMENDATIONS
+   ========================================================= */
+
+.dashboard-recommendations {
+  grid-column: span 4;
+}
+
+.recommendation {
+  padding: 11px;
+  margin-bottom: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.recommendation h3 {
+  margin: 0 0 4px;
+}
+
+.recommendation p {
+  margin: 5px 0;
+  font-size: 11px;
+}
+
+.priority-high {
+  border-left: 4px solid #dc2626;
+}
+
+.priority-medium {
+  border-left: 4px solid #f59e0b;
+}
+
+.priority-low {
+  border-left: 4px solid #2563eb;
+}
+
+/* =========================================================
+   REQUIREMENT ANALYSIS — HORIZONTAL
+   ========================================================= */
+
+.dashboard-requirements {
+  grid-column: 1 / -1;
+}
+
+.dashboard-requirements .requirement {
+  display: grid;
+  grid-template-columns: 1.3fr 0.65fr 1.3fr;
+  column-gap: 16px;
+  align-items: center;
+
+  margin-bottom: 8px;
+  padding: 11px 12px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.requirement p {
+  margin: 3px 0;
+  font-size: 11px;
+}
+
+.requirement p:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.requirement p:nth-child(2) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.requirement p:nth-child(3) {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.requirement p:nth-child(4) {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.requirement p:nth-child(5) {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.requirement p:nth-child(6) {
+  grid-column: 3;
+  grid-row: 2 / span 2;
+}
+
+.match-score {
+  display: inline-block;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 750;
+  font-size: 11px;
+}
+
+/* =========================================================
+   LOADING / ERROR
+   ========================================================= */
+
+.loading,
+.error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.loading {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+  .container {
+    width: min(100% - 24px, 1100px);
+  }
+
+  .input-card {
+    grid-template-columns: 1fr 1.7fr 190px;
+  }
+
+  .score-grid {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-breakdown {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-candidate,
+  .dashboard-ats {
+    grid-column: span 4;
+  }
+
+  .dashboard-skills {
+    grid-column: span 8;
+  }
+
+  .dashboard-ai,
+  .dashboard-recommendations {
+    grid-column: span 6;
+  }
+
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+  .header {
+    padding: 18px 16px;
+  }
+
+  .container {
+    width: min(100% - 18px, 650px);
+    margin-top: 10px;
+  }
+
+  .input-card,
+  .card {
+    padding: 13px;
+    border-radius: 12px;
+  }
+
+  .input-card {
+    display: block;
+  }
+
+  .input-card > h2,
+  .input-card > p {
+    text-align: left;
+  }
+
+  .input-section {
+    margin-top: 8px;
+  }
+
+  .analyze-button {
+    margin-top: 12px;
+  }
+
+  .results {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .results-title,
+  .score-grid,
+  .dashboard-breakdown,
+  .dashboard-candidate,
+  .dashboard-skills,
+  .dashboard-ats,
+  .dashboard-ai,
+  .dashboard-recommendations,
+  .dashboard-requirements {
+    grid-column: 1 / -1;
+  }
+
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .score-card {
+    min-height: 265px;
+  }
+
+  .check-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-requirements .requirement {
+    display: block;
+  }
+
+  .dashboard-requirements .requirement p {
+    margin: 6px 0;
+  }
+
+  .dashboard-ai > div {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .score-breakdown-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+}
