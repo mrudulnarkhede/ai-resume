@@ -173,6 +173,11 @@ function Analyzer() {
         return;
       }
 
+      // Ignore Markdown code fences returned by the AI.
+      if (/^```/.test(line)) {
+        return;
+      }
+
       const normalizedHeading = line
         .replace(/^#+\s*/, "")
         .replace(/^\*\*(.*?)\*\*$/, "$1")
@@ -271,6 +276,10 @@ function Analyzer() {
         .replace(/\*\*(.*?)\*\*/g, "$1")
         .trim();
 
+      const labelMatch = cleanLine.match(
+        /^\*{0,2}(Current|Suggested|Improved|Recommendation)\s*:\*{0,2}$/i
+      );
+
       const numberedMatch = cleanLine.match(
         /^\d+\.\s*(.*)$/
       );
@@ -279,7 +288,12 @@ function Analyzer() {
         /^[-•*]\s+(.*)$/
       );
 
-      if (numberedMatch) {
+      if (labelMatch) {
+        currentSection.items.push({
+          type: "label",
+          text: labelMatch[1]
+        });
+      } else if (numberedMatch) {
         currentSection.items.push({
           type: "number",
           text: numberedMatch[1].trim()
@@ -296,6 +310,85 @@ function Analyzer() {
         });
       }
 
+    });
+
+    /*
+     * Convert sequential Current / Suggested AI output into
+     * side-by-side comparison cards.
+     *
+     * This supports AI responses such as:
+     * Current:
+     * - old bullet
+     * Suggested:
+     * - improved bullet
+     *
+     * even when the AI does not return a Markdown table.
+     */
+    sections.forEach((section) => {
+      if (section.type !== "bullets") {
+        return;
+      }
+
+      const convertedItems = [];
+      let i = 0;
+
+      while (i < section.items.length) {
+        const item = section.items[i];
+
+        if (
+          item.type === "label" &&
+          item.text.toLowerCase() === "current"
+        ) {
+          const currentItem = section.items[i + 1];
+
+          let suggestedIndex = i + 2;
+
+          while (
+            suggestedIndex < section.items.length &&
+            section.items[suggestedIndex].type === "label" &&
+            section.items[suggestedIndex].text.toLowerCase() !== "suggested"
+          ) {
+            suggestedIndex++;
+          }
+
+          const suggestedLabel = section.items[suggestedIndex];
+
+          if (
+            currentItem &&
+            currentItem.type !== "label" &&
+            suggestedLabel &&
+            suggestedLabel.type === "label" &&
+            suggestedLabel.text.toLowerCase() === "suggested"
+          ) {
+            const suggestedItem = section.items[suggestedIndex + 1];
+
+            if (suggestedItem && suggestedItem.type !== "label") {
+              convertedItems.push({
+                type: "table",
+                current:
+                  currentItem.text ||
+                  currentItem.current ||
+                  "",
+                suggested:
+                  suggestedItem.text ||
+                  suggestedItem.suggested ||
+                  ""
+              });
+
+              i = suggestedIndex + 2;
+              continue;
+            }
+          }
+        }
+
+        /*
+         * Keep already parsed Markdown-table rows unchanged.
+         */
+        convertedItems.push(item);
+        i++;
+      }
+
+      section.items = convertedItems;
     });
 
     return sections;
@@ -640,7 +733,56 @@ function Analyzer() {
 
           </h2>
 
+          {/* ================================================= */}
+          {/* CANDIDATE */}
+          {/* ================================================= */}
 
+          <div className="card dashboard-candidate">
+
+            <h2>
+              Candidate
+            </h2>
+
+            <p>
+
+              <strong>
+                Name:
+              </strong>
+
+              {" "}
+
+              {result.resume.name ||
+                "Name not detected"}
+
+            </p>
+
+            <p>
+
+              <strong>
+                Resume:
+              </strong>
+
+              {" "}
+
+              {result.resume.filename}
+
+            </p>
+
+            <p>
+
+              <strong>
+                Target Job:
+              </strong>
+
+              {" "}
+
+              {result.job.title ||
+                "Job title not detected"}
+
+            </p>
+
+          </div>
+          
           {/* ================================================= */}
           {/* PROFESSIONAL SCORE DASHBOARD */}
           {/* ================================================= */}
@@ -1085,58 +1227,7 @@ function Analyzer() {
           )}
 
 
-          {/* ================================================= */}
-          {/* CANDIDATE */}
-          {/* ================================================= */}
-
-          <div className="card dashboard-candidate">
-
-            <h2>
-              Candidate
-            </h2>
-
-
-            <p>
-
-              <strong>
-                Name:
-              </strong>
-
-              {" "}
-
-              {result.resume.name ||
-                "Name not detected"}
-
-            </p>
-
-
-            <p>
-
-              <strong>
-                Resume:
-              </strong>
-
-              {" "}
-
-              {result.resume.filename}
-
-            </p>
-
-
-            <p>
-
-              <strong>
-                Target Job:
-              </strong>
-
-              {" "}
-
-              {result.job.title ||
-                "Job title not detected"}
-
-            </p>
-
-          </div>
+        
 
 
           {/* ================================================= */}
@@ -1151,7 +1242,7 @@ function Analyzer() {
 
             <p>
               Required Skill Coverage:
-              {" "}
+              {""}
               <strong>
                 {result.skill_coverage.required_coverage}%
               </strong>
@@ -1651,8 +1742,8 @@ function Analyzer() {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "16px",
-                  marginTop: "18px"
+                  gap: "10px",
+                  marginTop: "10px"
                 }}
               >
 
@@ -1666,8 +1757,8 @@ function Analyzer() {
                       style={{
                         background: "#f8fafc",
                         border: "1px solid #e2e8f0",
-                        borderRadius: "14px",
-                        padding: "18px 20px",
+                        borderRadius: "12px",
+                        padding: "14px 16px",
                         textAlign: "left"
                       }}
                     >
@@ -1677,7 +1768,7 @@ function Analyzer() {
                           display: "flex",
                           alignItems: "center",
                           gap: "9px",
-                          marginBottom: "12px"
+                          marginBottom: "8px"
                         }}
                       >
 
@@ -1722,7 +1813,7 @@ function Analyzer() {
                                     gridTemplateColumns:
                                       "minmax(0, 1fr) minmax(0, 1fr)",
                                     gap: "12px",
-                                    padding: "12px 0",
+                                    padding: "8px 0",
                                     borderBottom:
                                       itemIndex === section.items.length - 1
                                         ? "none"
@@ -1735,7 +1826,8 @@ function Analyzer() {
                                       background: "#ffffff",
                                       border: "1px solid #e2e8f0",
                                       borderRadius: "10px",
-                                      padding: "12px"
+                                      padding: "12px",
+                                      minWidth: 0
                                     }}
                                   >
 
@@ -1745,7 +1837,8 @@ function Analyzer() {
                                         fontWeight: "700",
                                         color: "#64748b",
                                         textTransform: "uppercase",
-                                        marginBottom: "6px"
+                                        marginBottom: "7px",
+                                        letterSpacing: "0.04em"
                                       }}
                                     >
                                       Current
@@ -1768,7 +1861,8 @@ function Analyzer() {
                                       background: "#f0fdf4",
                                       border: "1px solid #bbf7d0",
                                       borderRadius: "10px",
-                                      padding: "12px"
+                                      padding: "12px",
+                                      minWidth: 0
                                     }}
                                   >
 
@@ -1778,7 +1872,8 @@ function Analyzer() {
                                         fontWeight: "700",
                                         color: "#166534",
                                         textTransform: "uppercase",
-                                        marginBottom: "6px"
+                                        marginBottom: "7px",
+                                        letterSpacing: "0.04em"
                                       }}
                                     >
                                       Suggested
@@ -1799,15 +1894,39 @@ function Analyzer() {
                               );
                             }
 
+                            if (item.type === "label") {
+                              return (
+                                <div
+                                  key={itemIndex}
+                                  style={{
+                                    marginTop: itemIndex === 0 ? "2px" : "10px",
+                                    marginBottom: "2px",
+                                    padding: "5px 0",
+                                    fontSize: "12px",
+                                    fontWeight: "800",
+                                    color:
+                                      item.text.toLowerCase() === "suggested" ||
+                                      item.text.toLowerCase() === "improved"
+                                        ? "#166534"
+                                        : "#475569",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.06em"
+                                  }}
+                                >
+                                  {item.text}
+                                </div>
+                              );
+                            }
+
                             if (item.type === "number") {
                               return (
                                 <div
                                   key={itemIndex}
                                   style={{
                                     display: "flex",
-                                    gap: "10px",
+                                    gap: "8px",
                                     alignItems: "flex-start",
-                                    lineHeight: "1.6",
+                                    lineHeight: "1.5",
                                     color: "#334155"
                                   }}
                                 >
@@ -1871,8 +1990,9 @@ function Analyzer() {
                                 key={itemIndex}
                                 style={{
                                   margin: 0,
-                                  lineHeight: "1.65",
-                                  color: "#334155"
+                                  lineHeight: "1.55",
+                                  color: "#334155",
+                                  fontSize: "13px"
                                 }}
                               >
                                 {renderAIItemText(
